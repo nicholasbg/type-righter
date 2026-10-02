@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.tgz
+.vitest/
+.vitest-attachments/
+test-results/

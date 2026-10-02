@@ -1,0 +1,61 @@
+{
+  "name": "type-righter",
+  "version": "0.1.0",
+  "description": "Composable runtime type guards with is, are, and Or predicates.",
+  "type": "module",
+  "main": "./dist/check.js",
+  "types": "./dist/check.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/check.d.ts",
+      "import": "./dist/check.js"
+    },
+    "./dom": {
+      "types": "./dist/check-dom.d.ts",
+      "import": "./dist/check-dom.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json && tsc -p tsconfig.core.json",
+    "test": "vitest run --config vitest.config.ts",
+    "test:browser": "vitest run --config vitest.browser.config.ts",
+    "test:package": "npm run build && node scripts/check-package.mjs",
+    "playwright:install": "playwright install chromium",
+    "check": "npm run build && npm run typecheck && npm run test && npm run test:browser && node scripts/check-package.mjs",
+    "prepack": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicholasbg/type-righter.git"
+  },
+  "homepage": "https://github.com/nicholasbg/type-righter#readme",
+  "bugs": {
+    "url": "https://github.com/nicholasbg/type-righter/issues"
+  },
+  "keywords": [
+    "typescript",
+    "type-guard",
+    "predicate",
+    "validation",
+    "dom"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "@vitest/browser-playwright": "^5.0.3",
+    "playwright": "^1.62.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true
+  }
+}

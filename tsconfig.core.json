@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": [
+    "src/types.ts",
+    "src/base-type-checkers.ts",
+    "tests/types/core-consumer.ts"
+  ]
+}
