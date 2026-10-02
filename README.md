@@ -3,9 +3,6 @@
 Composable runtime type guards for JavaScript and TypeScript. Write the check;
 the Proxy supplies the predicate.
 
-This is the initial extraction from `nicholasbg/js-utils`. It has not yet been
-published to npm.
-
 ## Core
 
 ```ts
@@ -114,8 +111,9 @@ Chromium DOM tests. `npm run build` emits JavaScript and declarations into
 `skipLibCheck: false`, including a core consumer without DOM libraries.
 
 `npm run test:package` builds and installs an npm tarball into a temporary
-consumer, then checks ESM exports and consumer declarations. It does not
-publish or register anything. `npm run check` includes this packaging check.
+consumer, then checks ESM exports and consumer declarations. The check is
+implemented in [scripts/check-package.mjs](scripts/check-package.mjs). It does
+not publish or register anything. `npm run check` includes this packaging check.
 Pass an exact TypeScript version after `--` to test consumer compatibility
 without changing the development dependency. CI tests the installed tarball
 with both the development compiler and TypeScript 4.7.2.
