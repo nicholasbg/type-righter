@@ -1,9 +1,8 @@
-import check from "./check.js";
-import type { CheckDOM } from "./types-dom.js";
+import typeCheck from "./check.js";
+import type { TypeCheckDOM } from "./types-dom.js";
 
-const checkDOM = check as unknown as CheckDOM;
+const typeCheckDOM = typeCheck as unknown as TypeCheckDOM;
 
 export * from "./base-dom-checkers.js";
-export type { CheckDOM, FormControl, InputType } from "./types-dom.js";
-export { checkDOM };
-export default checkDOM;
+export type { FormControl, InputType, TypeCheckDOM } from "./types-dom.js";
+export { typeCheckDOM };

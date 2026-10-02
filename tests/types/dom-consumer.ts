@@ -1,21 +1,30 @@
-import checkDOM, { isElement, isFormControl } from "type-righter/dom";
-import type { FormControl } from "type-righter/dom";
+import type { FormControl, TypeCheck, TypeCheckDOM } from "type-righter";
+import typeCheck, {
+  isElement,
+  isFormControl,
+  isString,
+  typeCheckDOM,
+} from "type-righter";
 
 declare function expectType<T>(value: T): void;
 
 export const checkDOMTypes = (value: unknown, values: unknown[]) => {
-  if (checkDOM.isNode(value)) value.nodeType;
+  expectType<TypeCheck>(typeCheck);
+  expectType<TypeCheckDOM>(typeCheckDOM);
+  if (typeCheck.isString(value)) value.toUpperCase();
+  if (isString(value)) value.toUpperCase();
+  if (typeCheckDOM.isNode(value)) value.nodeType;
   if (isElement(value)) value.matches("input");
   if (isFormControl(value)) expectType<FormControl>(value);
-  if (checkDOM.isInputOrDialog(value))
+  if (typeCheckDOM.isInputOrDialog(value))
     expectType<HTMLInputElement | HTMLDialogElement>(value);
-  if (checkDOM.isHTMLOrSVGOrFile(value))
+  if (typeCheckDOM.isHTMLOrSVGOrFile(value))
     expectType<HTMLElement | SVGElement | File>(value);
-  if (checkDOM.areInputsOrDialogs(values))
+  if (typeCheckDOM.areInputsOrDialogs(values))
     expectType<(HTMLInputElement | HTMLDialogElement)[]>(values);
-  if (checkDOM.areHTMLOrSVG(values))
+  if (typeCheckDOM.areHTMLOrSVG(values))
     expectType<(HTMLElement | SVGElement)[]>(values);
   // @ts-expect-error Cross-domain chains do not have precise DOM-view keys.
-  checkDOM.isNodeOrNullish(value);
-  checkDOM.isNodeOrNullish?.(value);
+  typeCheckDOM.isNodeOrNullish(value);
+  typeCheckDOM.isNodeOrNullish?.(value);
 };

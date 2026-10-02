@@ -1,26 +1,26 @@
 import { describe, expect, it } from "vitest";
-import check from "../src/check.js";
-import checkDOM, {
-  checkDOM as namedCheckDOM,
+import typeCheck, {
   isInput,
-} from "../src/check-dom.js";
+  typeCheckDOM as namedTypeCheckDOM,
+  typeCheckDOM,
+} from "../src/index.js";
 
-describe("checkDOM", () => {
+describe("typeCheckDOM", () => {
   describe("single-type predicates", () => {
     it("isNode", () => {
-      expect(checkDOM.isNode(document.createElement("div"))).toBe(true);
-      expect(checkDOM.isNode({})).toBe(false);
+      expect(typeCheckDOM.isNode(document.createElement("div"))).toBe(true);
+      expect(typeCheckDOM.isNode({})).toBe(false);
     });
 
     it("isElement", () => {
-      expect(checkDOM.isElement(document.createElement("div"))).toBe(true);
-      expect(checkDOM.isElement(document.createTextNode("x"))).toBe(false);
+      expect(typeCheckDOM.isElement(document.createElement("div"))).toBe(true);
+      expect(typeCheckDOM.isElement(document.createTextNode("x"))).toBe(false);
     });
 
     it("isHTML", () => {
-      expect(checkDOM.isHTML(document.createElement("div"))).toBe(true);
+      expect(typeCheckDOM.isHTML(document.createElement("div"))).toBe(true);
       expect(
-        checkDOM.isHTML(
+        typeCheckDOM.isHTML(
           document.createElementNS("http://www.w3.org/2000/svg", "svg"),
         ),
       ).toBe(false);
@@ -28,32 +28,38 @@ describe("checkDOM", () => {
 
     it("isSVG", () => {
       expect(
-        checkDOM.isSVG(
+        typeCheckDOM.isSVG(
           document.createElementNS("http://www.w3.org/2000/svg", "svg"),
         ),
       ).toBe(true);
-      expect(checkDOM.isSVG(document.createElement("div"))).toBe(false);
+      expect(typeCheckDOM.isSVG(document.createElement("div"))).toBe(false);
     });
 
     it("isInput", () => {
-      expect(checkDOM.isInput(document.createElement("input"))).toBe(true);
-      expect(checkDOM.isInput(document.createElement("div"))).toBe(false);
+      expect(typeCheckDOM.isInput(document.createElement("input"))).toBe(true);
+      expect(typeCheckDOM.isInput(document.createElement("div"))).toBe(false);
     });
 
     it("isDialog", () => {
-      expect(checkDOM.isDialog(document.createElement("dialog"))).toBe(true);
-      expect(checkDOM.isDialog(document.createElement("div"))).toBe(false);
+      expect(typeCheckDOM.isDialog(document.createElement("dialog"))).toBe(
+        true,
+      );
+      expect(typeCheckDOM.isDialog(document.createElement("div"))).toBe(false);
     });
 
     it("isFile", () => {
-      expect(checkDOM.isFile(new File(["x"], "x.txt"))).toBe(true);
-      expect(checkDOM.isFile({})).toBe(false);
+      expect(typeCheckDOM.isFile(new File(["x"], "x.txt"))).toBe(true);
+      expect(typeCheckDOM.isFile({})).toBe(false);
     });
 
     it("isFormControl", () => {
       for (const tag of ["input", "button", "select", "textarea"])
-        expect(checkDOM.isFormControl(document.createElement(tag))).toBe(true);
-      expect(checkDOM.isFormControl(document.createElement("div"))).toBe(false);
+        expect(typeCheckDOM.isFormControl(document.createElement(tag))).toBe(
+          true,
+        );
+      expect(typeCheckDOM.isFormControl(document.createElement("div"))).toBe(
+        false,
+      );
     });
 
     it("isInputType", () => {
@@ -66,28 +72,34 @@ describe("checkDOM", () => {
         "fieldset",
         "optgroup",
       ])
-        expect(checkDOM.isInputType(document.createElement(tag))).toBe(true);
-      expect(checkDOM.isInputType(document.createElement("div"))).toBe(false);
+        expect(typeCheckDOM.isInputType(document.createElement(tag))).toBe(
+          true,
+        );
+      expect(typeCheckDOM.isInputType(document.createElement("div"))).toBe(
+        false,
+      );
     });
   });
 
   describe("Or chains", () => {
     it("isElementOrDialog", () => {
-      expect(checkDOM.isElementOrDialog(document.createElement("div"))).toBe(
-        true,
-      );
-      expect(checkDOM.isElementOrDialog(document.createElement("dialog"))).toBe(
-        true,
-      );
-      expect(checkDOM.isElementOrDialog({})).toBe(false);
+      expect(
+        typeCheckDOM.isElementOrDialog(document.createElement("div")),
+      ).toBe(true);
+      expect(
+        typeCheckDOM.isElementOrDialog(document.createElement("dialog")),
+      ).toBe(true);
+      expect(typeCheckDOM.isElementOrDialog({})).toBe(false);
     });
 
     it("keeps cross-domain chains working at runtime", () => {
-      expect(check.isNodeOrNumber?.(document.createElement("div"))).toBe(true);
-      expect(check.isNodeOrNumber?.(2)).toBe(true);
-      expect(check.isNodeOrNumber?.(true)).toBe(false);
+      expect(typeCheck.isNodeOrNumber?.(document.createElement("div"))).toBe(
+        true,
+      );
+      expect(typeCheck.isNodeOrNumber?.(2)).toBe(true);
+      expect(typeCheck.isNodeOrNumber?.(true)).toBe(false);
       expect(
-        check.areStringsOrNodesOrBooleans?.([
+        typeCheck.areStringsOrNodesOrBooleans?.([
           "a",
           document.createElement("div"),
           true,
@@ -99,24 +111,26 @@ describe("checkDOM", () => {
   describe("are multi-value predicates", () => {
     it("checks every item in an iterable", () => {
       expect(
-        checkDOM.areNode([
+        typeCheckDOM.areNode([
           document.createElement("div"),
           document.createElement("span"),
         ]),
       ).toBe(true);
-      expect(checkDOM.areNode([document.createElement("div"), {}])).toBe(false);
-      expect(checkDOM.areNode([])).toBe(true);
+      expect(typeCheckDOM.areNode([document.createElement("div"), {}])).toBe(
+        false,
+      );
+      expect(typeCheckDOM.areNode([])).toBe(true);
     });
 
     it("tolerates pluralized type names", () => {
       expect(
-        checkDOM.areElements([
+        typeCheckDOM.areElements([
           document.createElement("div"),
           document.createElement("span"),
         ]),
       ).toBe(true);
       expect(
-        checkDOM.areElementsOrDialogs([
+        typeCheckDOM.areElementsOrDialogs([
           document.createElement("div"),
           document.createElement("dialog"),
         ]),
@@ -125,10 +139,10 @@ describe("checkDOM", () => {
   });
 
   describe("exports and realms", () => {
-    it("aliases the same Proxy as check", () => {
-      expect(checkDOM).toBe(check);
-      expect(namedCheckDOM).toBe(checkDOM);
-      expect(checkDOM.isInput).toBe(isInput);
+    it("aliases the same Proxy as typeCheck", () => {
+      expect(typeCheckDOM).toBe(typeCheck);
+      expect(namedTypeCheckDOM).toBe(typeCheckDOM);
+      expect(typeCheckDOM.isInput).toBe(isInput);
     });
 
     it("recognizes elements and Dates from an iframe", () => {
@@ -140,13 +154,13 @@ describe("checkDOM", () => {
           typeof globalThis;
         const input = ownerDocument.createElement("input");
         expect(input instanceof HTMLInputElement).toBe(false);
-        expect(checkDOM.isInput(input)).toBe(true);
-        expect(checkDOM.isNode(input)).toBe(true);
-        expect(checkDOM.isElement(input)).toBe(true);
-        expect(checkDOM.isFormControl(input)).toBe(true);
-        expect(checkDOM.isInputType(input)).toBe(true);
+        expect(typeCheckDOM.isInput(input)).toBe(true);
+        expect(typeCheckDOM.isNode(input)).toBe(true);
+        expect(typeCheckDOM.isElement(input)).toBe(true);
+        expect(typeCheckDOM.isFormControl(input)).toBe(true);
+        expect(typeCheckDOM.isInputType(input)).toBe(true);
         expect(isInput(input, ownerWindow)).toBe(true);
-        expect(check.isDate(new ownerWindow.Date())).toBe(true);
+        expect(typeCheck.isDate(new ownerWindow.Date())).toBe(true);
       } finally {
         frame.remove();
       }

@@ -59,10 +59,10 @@ type ArePredicate<T> = {
   (vals: Iterable<unknown>): vals is Iterable<T>;
 };
 
-export type BaseIsCheck = (val: unknown) => boolean;
-export type BaseAreCheck = (vals: Iterable<unknown>) => boolean;
+export type BaseIsTypeCheck = (val: unknown) => boolean;
+export type BaseAreTypeCheck = (vals: Iterable<unknown>) => boolean;
 
-export type CheckFor<Map extends object> = {
+export type TypeCheckFor<Map extends object> = {
   [K in `is${OrChainOf<Extract<keyof Map, string>>}`]: (
     value: unknown,
   ) => value is ExpressionType<K, "is", Map>;
@@ -71,9 +71,9 @@ export type CheckFor<Map extends object> = {
     ExpressionType<K, "are", Map>
   >;
 } & {
-  [key: `are${string}`]: BaseAreCheck | undefined;
+  [key: `are${string}`]: BaseAreTypeCheck | undefined;
 } & {
-  [key: string]: BaseIsCheck | undefined;
+  [key: string]: BaseIsTypeCheck | undefined;
 };
 
-export type Check = CheckFor<TypeMap>;
+export type TypeCheck = TypeCheckFor<TypeMap>;

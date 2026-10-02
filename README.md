@@ -6,26 +6,28 @@ the Proxy supplies the predicate.
 ## Core
 
 ```ts
-import check, { isString } from "type-righter";
+import typeCheck, { isString } from "type-righter";
 import type { Falsy } from "type-righter";
 
 const value: unknown = "hello";
-if (check.isString(value)) value.toUpperCase();
-if (check.isStringOrNumber(value)) value.toString();
-if (check.isStringOrFalsy(value)) {
+if (typeCheck.isString(value)) value.toUpperCase();
+if (typeCheck.isStringOrNumber(value)) value.toString();
+if (typeCheck.isStringOrFalsy(value)) {
   const match: string | Falsy = value;
 }
 
 const values: unknown[] = ["hello", 42];
-if (check.areStringsOrNumbers(values)) {
+if (typeCheck.areStringsOrNumbers(values)) {
   values.map((item) => item.toString());
 }
 
 isString(value);
 ```
 
-Default and named `check` exports reference the same object. The standalone
-named predicates bypass the Proxy.
+Default and named `typeCheck` exports reference the same object. Its type is
+exported as `TypeCheck`. The standalone named predicates bypass the Proxy.
+All public predicates and types, including the DOM exports, are available
+from `type-righter`; `typeCheck` is the only default export.
 
 Core names: `String`, `Number`, `Boolean`, `BigInt`, `Symbol`, `Function`,
 `Object`, `Array`, `Date`, `IterableObj`, `Null`, `Undefined`, `Nullish`,
@@ -43,24 +45,34 @@ predicate or an Or-chain token. Custom
 ## DOM
 
 ```ts
-import checkDOM, { isInput } from "type-righter/dom";
+import { typeCheckDOM, isInput } from "type-righter";
 
 const value: unknown = document.querySelector("input");
-if (checkDOM.isInput(value)) value.value;
-if (checkDOM.isHTMLOrSVG(value)) value.style;
+if (typeCheckDOM.isInput(value)) value.value;
+if (typeCheckDOM.isHTMLOrSVG(value)) value.style;
 
 isInput(value);
 ```
 
-`checkDOM` is the same runtime Proxy as `check`, with a separate typed view.
+`typeCheckDOM` is the same runtime Proxy as `typeCheck`, with a separate typed
+view.
 Its names are `Node`, `Element`, `HTML`, `SVG`, `Input`, `Dialog`, `File`,
-`FormControl`, and `InputType`. The DOM entry also exports the standalone
-DOM predicates and the `CheckDOM`, `FormControl`, and `InputType` types.
+`FormControl`, and `InputType`. The root entry also exports the standalone
+DOM predicates and the `TypeCheckDOM`, `FormControl`, and `InputType` types.
 
 Element checks use the node's owning Window, including iframe elements.
 `isFile` uses the current realm's `File` constructor. DOM checks require
-appropriate browser APIs when called; importing the core entry does not
-require DOM globals or DOM TypeScript libraries.
+appropriate browser APIs when called; importing either entry does not
+require DOM globals. The root declarations require DOM TypeScript libraries.
+For TypeScript consumers without DOM libraries, use the core-only entry:
+
+```ts
+import typeCheck, { isString } from "type-righter/core";
+import type { TypeCheck, Falsy } from "type-righter/core";
+```
+
+`type-righter/core` exports the same `typeCheck` Proxy, core predicates, and
+core types, without requiring DOM TypeScript libraries.
 
 ## Grammar And Typing
 
@@ -75,8 +87,8 @@ require DOM globals or DOM TypeScript libraries.
 - Repeated access to a generated predicate reuses its cached function.
 
 ```ts
-check.isStringOrNumberOrBooleanOrNullish?.(value);
-checkDOM.isNodeOrNullish?.(value);
+typeCheck.isStringOrNumberOrBooleanOrNullish?.(value);
+typeCheckDOM.isNodeOrNullish?.(value);
 ```
 
 Empty iterables pass. Checks iterate the supplied value, so checking a

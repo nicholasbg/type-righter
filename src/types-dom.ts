@@ -1,4 +1,4 @@
-import type { CheckFor } from "./types.js";
+import type { TypeCheckFor } from "./types.js";
 
 export type FormControl =
   | HTMLInputElement
@@ -24,4 +24,4 @@ type DOMTypeMap = {
   InputType: InputType;
 };
 
-export type CheckDOM = CheckFor<DOMTypeMap>;
+export type TypeCheckDOM = TypeCheckFor<DOMTypeMap>;

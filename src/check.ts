@@ -26,9 +26,9 @@ import {
   isSymbol,
   isUndefined,
 } from "./base-type-checkers.js";
-import type { BaseAreCheck, BaseIsCheck, Check } from "./types.js";
+import type { BaseAreTypeCheck, BaseIsTypeCheck, TypeCheck } from "./types.js";
 
-const baseTypeCheckersMap = new Map<string, BaseIsCheck>();
+const baseTypeCheckersMap = new Map<string, BaseIsTypeCheck>();
 const baseTypeCheckers = {
   isArray,
   isBigInt,
@@ -55,7 +55,7 @@ const baseTypeCheckers = {
   isInputType,
   isNaNType,
 };
-const baseCheckersMap = new Map<string, BaseIsCheck>();
+const baseCheckersMap = new Map<string, BaseIsTypeCheck>();
 
 Object.entries(baseTypeCheckers).forEach(([key, value]) => {
   baseTypeCheckersMap.set(key, value);
@@ -73,9 +73,9 @@ const tokenize = (key: string, prefix: string) =>
 const checkersFor = (
   types: string[] | false,
   allowPlural = false,
-): BaseIsCheck[] | undefined => {
+): BaseIsTypeCheck[] | undefined => {
   if (!types) return undefined;
-  const checkers: BaseIsCheck[] = [];
+  const checkers: BaseIsTypeCheck[] = [];
   for (const type of types) {
     const name = type.toLowerCase();
     const checker =
@@ -89,16 +89,16 @@ const checkersFor = (
   return checkers;
 };
 
-const cache = new Map<string, BaseIsCheck | BaseAreCheck | undefined>();
+const cache = new Map<string, BaseIsTypeCheck | BaseAreTypeCheck | undefined>();
 
-const matchesEvery = (checkers: BaseIsCheck[], vals: Iterable<unknown>) => {
+const matchesEvery = (checkers: BaseIsTypeCheck[], vals: Iterable<unknown>) => {
   for (const val of vals)
     if (!checkers.some((checker) => checker(val))) return false;
   return true;
 };
 
 /** Generates is/are predicates with precise typing for up to three types. */
-const check: Check = new Proxy({} as Check, {
+const typeCheck: TypeCheck = new Proxy({} as TypeCheck, {
   get(_target, key) {
     if (!isString(key)) return undefined;
     if (baseTypeCheckersMap.has(key)) return baseTypeCheckersMap.get(key);
@@ -107,12 +107,12 @@ const check: Check = new Proxy({} as Check, {
       const isCheckers = checkersFor(tokenize(key, "is"));
       if (isCheckers)
         cache.set(key, ((val) =>
-          matchesEvery(isCheckers, [val])) as BaseIsCheck);
+          matchesEvery(isCheckers, [val])) as BaseIsTypeCheck);
       else {
         const areCheckers = checkersFor(tokenize(key, "are"), true);
         if (areCheckers)
           cache.set(key, ((vals) =>
-            matchesEvery(areCheckers, vals)) as BaseAreCheck);
+            matchesEvery(areCheckers, vals)) as BaseAreTypeCheck);
       }
     }
     return cache.get(key);
@@ -121,13 +121,13 @@ const check: Check = new Proxy({} as Check, {
 
 export * from "./base-type-checkers.js";
 export type {
-  BaseAreCheck,
-  BaseIsCheck,
-  Check,
+  BaseAreTypeCheck,
+  BaseIsTypeCheck,
   Falsy,
   FunctionType,
   NaNType,
   Nullish,
+  TypeCheck,
 } from "./types.js";
-export { check };
-export default check;
+export { typeCheck };
+export default typeCheck;

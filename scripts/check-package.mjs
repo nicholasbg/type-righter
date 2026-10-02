@@ -28,6 +28,8 @@ try {
       `Unexpected published file: ${file.path}`,
     );
   for (const file of [
+    "dist/index.js",
+    "dist/index.d.ts",
     "dist/check.js",
     "dist/check.d.ts",
     "dist/check-dom.js",
@@ -53,18 +55,23 @@ try {
     "-e",
     `
     import assert from "node:assert/strict";
-    import check, { check as namedCheck, isString } from "type-righter";
-    import checkDOM, { checkDOM as namedCheckDOM } from "type-righter/dom";
+    import typeCheck, { typeCheck as namedTypeCheck, typeCheckDOM, isString, isInput } from "type-righter";
+    import coreTypeCheck, { typeCheck as namedCoreTypeCheck, isString as coreIsString } from "type-righter/core";
     assert.equal(typeof document, "undefined");
     assert.equal(typeof window, "undefined");
-    assert.equal(check, namedCheck);
-    assert.equal(check, checkDOM);
-    assert.equal(checkDOM, namedCheckDOM);
-    assert.equal(check.isString, isString);
-    assert.equal(check.isStringOrFalsy(0), true);
-    assert.equal(check.areStrings(new Set(["a", "b"])), true);
-    assert.equal(check.isStringOrNumberOrBooleanOrNullish?.(true), true);
-    assert.equal(check.isBanana, undefined);
+    assert.equal(typeCheck, namedTypeCheck);
+    assert.equal(typeCheck, typeCheckDOM);
+    assert.equal(typeCheck, coreTypeCheck);
+    assert.equal(coreTypeCheck, namedCoreTypeCheck);
+    assert.equal(isString, coreIsString);
+    assert.equal(typeCheck.isString, isString);
+    assert.equal(typeCheckDOM.isInput, isInput);
+    assert.equal(isInput({}), false);
+    assert.equal(typeCheck.isStringOrFalsy(0), true);
+    assert.equal(typeCheck.areStrings(new Set(["a", "b"])), true);
+    assert.equal(typeCheck.isStringOrNumberOrBooleanOrNullish?.(true), true);
+    assert.equal(typeCheck.isBanana, undefined);
+    await assert.rejects(import("type-righter/dom"), { code: "ERR_PACKAGE_PATH_NOT_EXPORTED" });
   `,
   ]);
 
